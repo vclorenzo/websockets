@@ -1,9 +1,13 @@
 {
   "name": "websockets",
   "version": "1.0.0",
-  "main": "server.js",
+  "main": "index.ts",
   "scripts": {
-    "dev": "node --watch server.js"
+    "dev": "tsx --watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:demo": "tsx src/crud.ts"
   },
   "keywords": [],
   "author": "",
@@ -11,11 +15,19 @@
   "type": "module",
   "description": "",
   "dependencies": {
+    "dotenv": "^17.4.2",
+    "drizzle-orm": "^0.45.2",
     "express": "^5.2.1",
+    "pg": "^8.23.0",
     "ws": "^8.21.3"
   },
   "devDependencies": {
+    "@types/express": "^5.0.6",
     "@types/node": "^26.2.0",
-    "@types/ws": "^8.18.1"
+    "@types/pg": "^8.23.1",
+    "@types/ws": "^8.18.1",
+    "drizzle-kit": "^0.31.10",
+    "tsx": "^4.23.12",
+    "typescript": "^7.0.2"
   }
 }
