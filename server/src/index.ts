@@ -4,7 +4,13 @@ import { Request, Response } from "express";
 import { matchRouter } from "./routes/matches.js";
 import { attachWebSocketServer } from "./ws/server.js";
 
-const PORT = Number(process.env.PORT) || 8000;
+const portEnv = process.env.PORT;
+const parsedPort =
+  portEnv === undefined || portEnv === "" ? NaN : Number(portEnv);
+const PORT =
+  Number.isInteger(parsedPort) && parsedPort >= 0 && parsedPort <= 65535
+    ? parsedPort
+    : 8000;
 const HOST = process.env.HOST || "0.0.0.0";
 
 const app = express();
@@ -21,8 +27,13 @@ const { broadcastMatchCreated } = attachWebSocketServer(server);
 app.locals.broadcastMatchCreated = broadcastMatchCreated;
 
 server.listen(PORT, HOST, () => {
+  const address = server.address();
+  const port =
+    typeof address === "object" && address !== null ? address.port : PORT;
   const baseUrl =
-    HOST === "0.0.0.0" ? `http://localhost:${PORT}` : `http://${HOST}:${PORT}`;
+    HOST === "0.0.0.0"
+      ? `http://localhost:${port}`
+      : `http://${HOST}:${port}`;
   console.log(`Server is running on ${baseUrl}`);
   console.log(
     `Websocket Server is running on ${baseUrl.replace("http", "ws")}/ws`,
