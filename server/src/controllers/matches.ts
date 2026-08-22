@@ -41,8 +41,10 @@ export async function createMatchController(req: Request, res: Response) {
   try {
     const event = await createMatch(parsed.data);
 
-    if (res.app.locals.broadcastMatchCreated) {
-      res.app.locals.broadcastMatchCreated(event);
+    try {
+      await Promise.resolve(res.app.locals.broadcastMatchCreated?.(event));
+    } catch {
+      // Broadcast failure must not fail the request after persistence.
     }
 
     res.status(201).json({ data: event });
@@ -79,11 +81,15 @@ export async function updateScoreController(req: Request, res: Response) {
   try {
     const updated = await updateMatchScore(matchId, bodyParsed.data);
 
-    if (res.app.locals.broadcastScoreUpdate) {
-      res.app.locals.broadcastScoreUpdate(matchId, {
-        homeScore: updated.homeScore,
-        awayScore: updated.awayScore,
-      });
+    try {
+      await Promise.resolve(
+        res.app.locals.broadcastScoreUpdate?.(matchId, {
+          homeScore: updated.homeScore,
+          awayScore: updated.awayScore,
+        }),
+      );
+    } catch {
+      // Broadcast failure must not fail the request after persistence.
     }
 
     res.json({ data: updated });

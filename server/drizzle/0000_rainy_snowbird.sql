@@ -8,10 +8,10 @@ CREATE TABLE "commentary" (
 	"event_type" text,
 	"actor" text,
 	"team" text,
-	"message" text,
+	"message" text NOT NULL,
 	"metadata" jsonb,
 	"tags" text[],
-	"created_at" timestamp with time zone DEFAULT now() NOT NULL
+	"created_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "matches" (
@@ -19,12 +19,12 @@ CREATE TABLE "matches" (
 	"sport" text NOT NULL,
 	"home_team" text NOT NULL,
 	"away_team" text NOT NULL,
-	"status" "match_status" NOT NULL,
-	"start_time" timestamp with time zone NOT NULL,
-	"end_time" timestamp with time zone,
+	"status" "match_status" DEFAULT 'scheduled' NOT NULL,
+	"start_time" timestamp,
+	"end_time" timestamp,
 	"home_score" integer DEFAULT 0 NOT NULL,
 	"away_score" integer DEFAULT 0 NOT NULL,
-	"created_at" timestamp with time zone DEFAULT now() NOT NULL
+	"created_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 ALTER TABLE "commentary" ADD CONSTRAINT "commentary_match_id_matches_id_fk" FOREIGN KEY ("match_id") REFERENCES "public"."matches"("id") ON DELETE no action ON UPDATE no action;
