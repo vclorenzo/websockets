@@ -3,6 +3,7 @@ import http from "http";
 import { Request, Response } from "express";
 import { matchRouter } from "./routes/matches.js";
 import { attachWebSocketServer } from "./ws/server.js";
+import { securityMiddleware } from "./arcjet.js";
 
 const portEnv = process.env.PORT;
 const parsedPort =
@@ -21,6 +22,7 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Hello World");
 });
 
+app.use(securityMiddleware());
 app.use("/matches", matchRouter);
 
 const { broadcastMatchCreated } = attachWebSocketServer(server);
@@ -31,9 +33,7 @@ server.listen(PORT, HOST, () => {
   const port =
     typeof address === "object" && address !== null ? address.port : PORT;
   const baseUrl =
-    HOST === "0.0.0.0"
-      ? `http://localhost:${port}`
-      : `http://${HOST}:${port}`;
+    HOST === "0.0.0.0" ? `http://localhost:${port}` : `http://${HOST}:${port}`;
   console.log(`Server is running on ${baseUrl}`);
   console.log(
     `Websocket Server is running on ${baseUrl.replace("http", "ws")}/ws`,
